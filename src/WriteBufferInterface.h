@@ -31,6 +31,8 @@
 #ifndef _WRITE_BUFFER_INTERFACE_H_
 #define _WRITE_BUFFER_INTERFACE_H_
 
+#include "Errors.h"
+
 namespace EmbeddedProto 
 {
   //! The pure virtual definition of a message buffer used for writing .
@@ -44,7 +46,12 @@ namespace EmbeddedProto
   {
     public:
 
-      WriteBufferInterface() = default;
+      WriteBufferInterface()
+        : error_(Error::NO_ERRORS)
+      {
+
+      }
+
       virtual ~WriteBufferInterface() = default;
 
       //! Delete all data in the buffer.
@@ -68,12 +75,29 @@ namespace EmbeddedProto
 
       //! Push an array of bytes into the buffer.
       /*!
-          The given array will be appended after already addded data in the buffer.
+          The given array will be appended after already added data in the buffer.
           \param[in] bytes Pointer to the array of bytes.
           \param[in] length The number of bytes in the array.
           \return True when there was space to add the bytes.
       */
       virtual bool push(const uint8_t* bytes, const uint32_t length) = 0;
+
+      //! Set the error which just occurred. 
+      /*!
+        This function is mainly used for the internals of EmbeddedProto. The user should however 
+        use the get_error() function in case of a serialization failure.
+
+        \param[in] e The error which has happened to be set in this buffer.
+      */
+      void set_error(const Error e) { error_ = e; }
+
+      //! Obtain the last error which has occurred when operating on this buffer.
+      Error get_error() const { return error_; }
+
+    private:
+
+      //! The last error which occurred while operating on this buffer.
+      Error error_;
       
   };
 

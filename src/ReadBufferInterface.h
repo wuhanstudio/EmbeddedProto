@@ -31,6 +31,8 @@
 #ifndef _READ_BUFFER_INTERFACE_H_
 #define _READ_BUFFER_INTERFACE_H_
 
+#include "Errors.h"
+
 namespace EmbeddedProto 
 {
   //! The pure virtual definition of a message buffer to read from.
@@ -41,7 +43,12 @@ namespace EmbeddedProto
   {
     public:
 
-      ReadBufferInterface() = default;
+      ReadBufferInterface()
+        : error_(Error::NO_ERRORS)
+      {
+
+      }
+
       virtual ~ReadBufferInterface() = default;
 
       //! Obtain the total number of bytes currently stored in the buffer.
@@ -81,6 +88,23 @@ namespace EmbeddedProto
           \return True when the buffer was not empty.
       */
       virtual bool pop(uint8_t& byte) = 0;
+
+      //! Set the error which just occurred. 
+      /*!
+        This function is mainly used for the internals of EmbeddedProto. The user should however 
+        use the get_error() function in case of a deserialization failure.
+
+        \param[in] e The error which has happened to be set in this buffer.
+      */
+      void set_error(const Error e) { error_ = e; }
+
+      //! Obtain the last error which has occurred when operating on this buffer.
+      Error get_error() const { return error_; }
+
+    private:
+
+      //! The last error which occurred while operating on this buffer.
+      Error error_;
 
   };
 
