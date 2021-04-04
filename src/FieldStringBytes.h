@@ -37,7 +37,7 @@
 #include <cstdint>
 #include <string.h>
 #include <type_traits>
-
+#include <algorithm>
 
 namespace EmbeddedProto
 {
